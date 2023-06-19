@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Notiflix from 'notiflix';
 // Ключ библиотеки axios
 const KEY = '37429759-66239b447aa4c13fe873ee915';
 
