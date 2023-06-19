@@ -37,7 +37,7 @@ function onSearchForm(e) {
         );
       } else {
         renderGallery(data.hits, gallery);
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        new SimpleLightbox('.gallery a').refresh();
         Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
         totalPages = Math.ceil(data.total / perPage);
       }
@@ -63,7 +63,7 @@ function onLoadMore() {
   fetchImages(query, page, perPage)
     .then(data => {
       renderGallery(data.hits, gallery);
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      new SimpleLightbox('.gallery a').refresh();
     })
     .catch(error => console.log(error))
     .finally(() => stopInfiniteScroll = false);
