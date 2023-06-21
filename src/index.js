@@ -12,11 +12,11 @@ let totalPages = Infinity;
 let page = 1;
 let stopInfiniteScroll = false;
 const perPage = 40;
-
+let lightbox = new SimpleLightbox('.gallery a');
 
 searchForm.addEventListener('submit', onSearchForm);
 
-function onSearchForm(e) {
+async function onSearchForm(e) {
   e.preventDefault();
   page = 1;
   query = e.currentTarget.elements.searchQuery.value.trim();
@@ -29,27 +29,27 @@ function onSearchForm(e) {
     return;
   }
   stopInfiniteScroll = true;
-  fetchImages(query, page, perPage)
-    .then(data => {
-      if (data.total === 0) {
+  try {
+    const data = await fetchImages(query, page, perPage)
+    if (data.total === 0) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.',
         );
       } else {
         renderGallery(data.hits, gallery);
-        new SimpleLightbox('.gallery a').refresh();
-        Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
+        lightbox.refresh();
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
         totalPages = Math.ceil(data.total / perPage);
       }
-    })
-    .catch(error => console.log(error))
-    .finally(() => {
-      searchForm.reset();
-      stopInfiniteScroll = false;
-    });
+  } catch (error) {
+      console.log(error)
+  } finally {
+    searchForm.reset();
+    stopInfiniteScroll = false;
+  }
 }
 
-function onLoadMore() {
+async function onLoadMore() {
   page += 1;
 
   stopInfiniteScroll = true;
@@ -59,14 +59,15 @@ function onLoadMore() {
     );
     return;
   }
-
-  fetchImages(query, page, perPage)
-    .then(data => {
-      renderGallery(data.hits, gallery);
-      new SimpleLightbox('.gallery a').refresh();
-    })
-    .catch(error => console.log(error))
-    .finally(() => stopInfiniteScroll = false);
+  try {
+    const data = await fetchImages(query, page, perPage)
+    renderGallery(data.hits, gallery);
+      lightbox.refresh();
+  } catch (error) {
+    console.log(error)
+  } finally {
+    stopInfiniteScroll = false
+  }
 }
 
 function checkIfEndOfPage() {
